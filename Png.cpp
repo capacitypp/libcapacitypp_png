@@ -116,9 +116,12 @@ void Png::read(const string& fpath)
 
 	this->rowPointers = new unsigned char*[height];
 	for (png_uint_32 i = 0; i < height; i++) {
-		this->rowPointers[i] = new unsigned char[rowbytes];
-		for (unsigned j = 0; j < this->rowbytes; j++)
-			this->rowPointers[i][j] = (unsigned)row_pointers[i][j];
+		this->rowPointers[i] = new unsigned char[width * 4];
+		for (unsigned j = 0; j < this->width; j++) { 
+			for (unsigned k = 0; k < 3; k++)
+				this->rowPointers[i][j * 4 + k] = (unsigned)row_pointers[i][j * 3 + k];
+			this->rowPointers[i][j * 4 + 3] = 0xff;
+		}
 	}
 
 	for (png_uint_32 i = 0; i < height; i++)

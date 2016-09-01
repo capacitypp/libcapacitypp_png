@@ -15,7 +15,7 @@ void write_ppm(const string& fpath, const Png& png)
 	unsigned char** rowPointers = png.getRowPointers();
 	for (unsigned i = 0; i < png.getHeight(); i++)
 	for (unsigned j = 0; j < png.getWidth(); j++)
-		ofs << (int)rowPointers[i][j * 3 + 0] << " " << (int)rowPointers[i][j * 3 + 1] << " " << (int)rowPointers[i][j * 3 + 2] << endl;
+		ofs << (int)rowPointers[i][j * 4 + 0] << " " << (int)rowPointers[i][j * 4 + 1] << " " << (int)rowPointers[i][j * 4 + 2] << endl;
 }
 
 int main(void)
