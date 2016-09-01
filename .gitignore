@@ -1,5 +1,6 @@
 build
 samples/read/read
+samples/read_and_write/read_and_write
 *.ppm
 *.png
 

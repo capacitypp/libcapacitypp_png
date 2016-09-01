@@ -97,6 +97,8 @@ void Png::read(const string& fpath)
 		throw UnsupportedInterlaceTypeException();
 	}
 	png_byte channels = png_get_channels(png_ptr, info_ptr);
+
+
 	this->channels = (unsigned short)channels;
 	switch (channels) {
 	case 3:
@@ -131,6 +133,90 @@ void Png::read(const string& fpath)
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 
 	fclose(fp);
+}
+
+void Png::write(const string& fpath) const
+{
+	FILE* fp = fopen(fpath.c_str(), "wb");
+	if (!fp)
+		throw CannotOpenFileException();
+
+	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+		throw CannotCreateWriteStructException();
+	png_infop info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr) {
+		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+		throw CannotCreateInfoStructException();
+	}
+
+	if (setjmp(png_jmpbuf(png_ptr))) {
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+		fclose(fp);
+		throw CannotSetjmpException();
+	}
+
+	png_init_io(png_ptr, fp);
+
+	switch (bitDepth) {
+	case 8:
+		break;
+	default:
+		cout << "bitDepth : " << bitDepth << endl;
+		throw UnsupportedBitDepthException();
+	}
+
+	switch (colorType) {
+	case PNG_COLOR_TYPE_RGB:
+		break;
+	default:
+		cout << "colorType : " << colorType << endl;
+		throw UnsupportedColorTypeException();
+	}
+
+	switch (interlaceType) {
+	case PNG_INTERLACE_NONE:
+		break;
+	default:
+		cout << "interlaceType : " << interlaceType << endl;
+		throw UnsupportedInterlaceTypeException();
+	}
+
+	switch (compressionType) {
+	case PNG_COMPRESSION_TYPE_BASE:
+		break;
+	default:
+		cout << "compressionType : " << compressionType << endl;
+		throw UnsupportedCompressionTypeException();
+	}
+
+	switch (filterMethod) {
+	case PNG_FILTER_TYPE_BASE:
+		break;
+	default:
+		cout << "filterMethod : " << filterMethod << endl;
+		throw UnsupportedFilterMethodException();
+	}
+
+	png_set_IHDR(png_ptr, info_ptr, (png_uint_32)width, (png_uint_32)height, (int)bitDepth, (int)colorType, (int)interlaceType, (int)compressionType, (int)filterMethod);
+
+	png_write_info(png_ptr, info_ptr);
+
+	png_bytepp row_pointers = new png_bytep[height];
+	for (unsigned i = 0; i < height; i++) {
+		row_pointers[i] = new png_byte[width * 3];
+		for (unsigned j = 0; j < width; j++)
+		for (unsigned k = 0; k < 3; k++)
+			row_pointers[i][j * 3 + k] = rowPointers[i][j * 4 + k];
+	}
+	png_write_image(png_ptr, row_pointers);
+
+	for (unsigned i = 0; i < height; i++)
+		delete[] row_pointers[i];
+	delete[] row_pointers;
+
+	fclose(fp);
+	png_destroy_write_struct(&png_ptr, &info_ptr);
 }
 
 unsigned Png::getWidth(void) const

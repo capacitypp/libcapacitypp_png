@@ -8,6 +8,7 @@ public:
 	class CannotOpenFileException{};
 	class NotPngException{};
 	class CannotCreateReadStructException{};
+	class CannotCreateWriteStructException{};
 	class CannotCreateInfoStructException{};
 	class CannotSetjmpException{};
 	class UnsupportedBitDepthException{};
@@ -33,6 +34,7 @@ public:
 	Png(const std::string& fpath);
 
 	void read(const std::string& fpath);
+	void write(const std::string& fpath) const;
 
 	unsigned getWidth(void) const;
 	unsigned getHeight(void) const;
