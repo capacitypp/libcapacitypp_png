@@ -5,9 +5,36 @@
 
 using namespace std;
 
+Png::Png(unsigned width, unsigned height)
+{
+	this->width = width;
+	this->height = height;
+	bitDepth = 8;
+	colorType = PNG_COLOR_TYPE_RGB;
+	filterMethod = PNG_FILTER_TYPE_BASE;
+	compressionType = PNG_COMPRESSION_TYPE_BASE;
+	interlaceType = PNG_INTERLACE_NONE;
+	channels = 3;
+	rowbytes = width * channels;
+	rowPointers = new unsigned char*[height];
+	for (unsigned i = 0; i < height; i++) {
+		rowPointers[i] = new unsigned char[width * 4];
+		for (unsigned j = 0; j < width; j++)
+		for (unsigned k = 0; k < 4; k++)
+			rowPointers[i][j * 4 + k] = 0xff;
+	}
+}
+
 Png::Png(const string& fpath)
 {
 	read(fpath);
+}
+
+Png::~Png()
+{
+	for (unsigned i = 0; i < height; i++)
+		delete[] rowPointers[i];
+	delete[] rowPointers;
 }
 
 void Png::read(const string& fpath)
@@ -264,8 +291,13 @@ unsigned Png::getRowbytes(void) const
 	return rowbytes;
 }
 
-unsigned char** Png::getRowPointers(void) const
+unsigned char** Png::getRowPointers(void)
 {
 	return rowPointers;
+}
+
+unsigned char* Png::operator[](int idx)
+{
+	return rowPointers[idx];
 }
 

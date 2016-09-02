@@ -31,7 +31,9 @@ private:
 	unsigned char** rowPointers;
 
 public:
+	Png(unsigned width, unsigned height);
 	Png(const std::string& fpath);
+	~Png();
 
 	void read(const std::string& fpath);
 	void write(const std::string& fpath) const;
@@ -45,7 +47,9 @@ public:
 	unsigned short getInterlaceType(void) const;
 	unsigned short getChannels(void) const;
 	unsigned getRowbytes(void) const;
-	unsigned char** getRowPointers(void) const;
+	unsigned char** getRowPointers(void);
+
+	unsigned char* operator[](int idx);
 };
 
 #endif
